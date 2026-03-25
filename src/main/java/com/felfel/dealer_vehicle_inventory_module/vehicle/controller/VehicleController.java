@@ -2,7 +2,7 @@ package com.felfel.dealer_vehicle_inventory_module.vehicle.controller;
 
 import com.felfel.dealer_vehicle_inventory_module.system.Result;
 import com.felfel.dealer_vehicle_inventory_module.vehicle.Data.Vehicle;
-import com.felfel.dealer_vehicle_inventory_module.vehicle.converter.VehicleToVehicleDtoConverter;
+import com.felfel.dealer_vehicle_inventory_module.vehicle.converter.VehicleToVehicleResponseDtoConverter;
 import com.felfel.dealer_vehicle_inventory_module.vehicle.dto.VehiclePatchRequestDto;
 import com.felfel.dealer_vehicle_inventory_module.vehicle.dto.VehiclePostRequestDto;
 import com.felfel.dealer_vehicle_inventory_module.vehicle.dto.VehicleResponseDto;
@@ -18,11 +18,11 @@ import java.util.UUID;
 public class VehicleController {
 
     private final VehicleService vehicleService;
-    private final VehicleToVehicleDtoConverter vehicleToVehicleDtoConverter;
+    private final VehicleToVehicleResponseDtoConverter vehicleToVehicleResponseDtoConverter;
 
-    public VehicleController(VehicleService vehicleService, VehicleToVehicleDtoConverter vehicleToVehicleDtoConverter) {
+    public VehicleController(VehicleService vehicleService, VehicleToVehicleResponseDtoConverter vehicleToVehicleResponseDtoConverter) {
         this.vehicleService = vehicleService;
-        this.vehicleToVehicleDtoConverter = vehicleToVehicleDtoConverter;
+        this.vehicleToVehicleResponseDtoConverter = vehicleToVehicleResponseDtoConverter;
     }
 
     @GetMapping()
@@ -30,7 +30,7 @@ public class VehicleController {
         List<Vehicle> vehicles = vehicleService.findAll();
         List<VehicleResponseDto> foundVehicleDtos = vehicles
                 .stream()
-                .map(vehicleToVehicleDtoConverter::convert)
+                .map(vehicleToVehicleResponseDtoConverter::convert)
                 .toList();
         return new Result(true, HttpStatus.OK.value(), "find all success", foundVehicleDtos);
     }
@@ -39,7 +39,7 @@ public class VehicleController {
     public Result findVehicleById(@PathVariable UUID id)
     {
         Vehicle foundVehicle = vehicleService.findById(id);
-        VehicleResponseDto foundVehicleDto = vehicleToVehicleDtoConverter.convert(foundVehicle);
+        VehicleResponseDto foundVehicleDto = vehicleToVehicleResponseDtoConverter.convert(foundVehicle);
         return new Result(true,HttpStatus.OK.value(), "find one success",foundVehicleDto);
     }
 
@@ -47,7 +47,7 @@ public class VehicleController {
     public Result addVehicle(@RequestBody VehiclePostRequestDto newVehicle)
     {
         Vehicle addedVehicle = vehicleService.add(newVehicle);
-        VehicleResponseDto addedVehicleDto = vehicleToVehicleDtoConverter.convert(addedVehicle);
+        VehicleResponseDto addedVehicleDto = vehicleToVehicleResponseDtoConverter.convert(addedVehicle);
         return new Result(true,HttpStatus.CREATED.value(), "add success",addedVehicleDto);
 
     }
@@ -55,7 +55,7 @@ public class VehicleController {
     public Result updateVehicle(@PathVariable UUID id, @RequestBody VehiclePatchRequestDto updatedVehicle)
     {
         Vehicle updatedVehicleData = vehicleService.update(id, updatedVehicle);
-        VehicleResponseDto updatedVehicleDto = vehicleToVehicleDtoConverter.convert(updatedVehicleData);
+        VehicleResponseDto updatedVehicleDto = vehicleToVehicleResponseDtoConverter.convert(updatedVehicleData);
         return new Result(true,HttpStatus.OK.value(), "update success",updatedVehicleDto);
     }
     @DeleteMapping("/{id}")

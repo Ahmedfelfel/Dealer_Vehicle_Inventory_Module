@@ -6,7 +6,6 @@ import java.util.UUID;
 
 public record VehicleResponseDto(
                          UUID id,
-                                  String  tenantId,
                                   UUID dealerId,
                                   String model,
                                   BigDecimal price,

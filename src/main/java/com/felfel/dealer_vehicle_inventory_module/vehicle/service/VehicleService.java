@@ -29,7 +29,7 @@ public class VehicleService {
     }
 
     public Vehicle findById(UUID id) {
-        checkVehicleBelongToCurrentTent(id,TenantContext.getCurrentTenant());
+        checkVehicleNotBelongToCurrentTent(id,TenantContext.getCurrentTenant());
         return this.vehicleRepo.findById(id)
                 .orElseThrow(() -> new OpjectNotFoundException(OBJECT_TYPE,id.toString()));
     }
@@ -47,7 +47,7 @@ public class VehicleService {
     }
 
     public Vehicle update(UUID id, VehiclePatchRequestDto updatedVehicle) {
-        checkVehicleBelongToCurrentTent(id,TenantContext.getCurrentTenant());
+        checkVehicleNotBelongToCurrentTent(id,TenantContext.getCurrentTenant());
         return this.vehicleRepo.findById(id)
                 .map(oldVehicle->
                 {
@@ -65,13 +65,13 @@ public class VehicleService {
     }
 
     public void delete(UUID id) {
-        checkVehicleBelongToCurrentTent(id,TenantContext.getCurrentTenant());
+        checkVehicleNotBelongToCurrentTent(id,TenantContext.getCurrentTenant());
         this.vehicleRepo.findById(id)
                 .orElseThrow(()->new OpjectNotFoundException(OBJECT_TYPE,id.toString()));
         this.vehicleRepo.deleteById(id);
     }
 
-    public void checkVehicleBelongToCurrentTent(UUID id,String currentTent)
+    public void checkVehicleNotBelongToCurrentTent(UUID id, String currentTent)
     {
          if(this.customGlobalQuery.isVehicleExistsInOtherTenant(id,currentTent))
              throw new AccessDeniedException("Cross-tenant access blocked");
