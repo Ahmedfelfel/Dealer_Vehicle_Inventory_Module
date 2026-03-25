@@ -12,7 +12,7 @@ public class VehicleToVehicleDtoConverter implements Converter<Vehicle, VehicleR
         return new VehicleResponseDto(
                 source.getId(),
                 source.getTenantId(),
-                source.getOwner().getName(),
+                source.getDealerId(),
                 source.getModel(),
                 source.getPrice(),
                 source.getStatus()

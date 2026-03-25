@@ -6,6 +6,8 @@ import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.TenantId;
+
 import java.io.Serializable;
 import java.util.UUID;
 
@@ -16,7 +18,7 @@ import java.util.UUID;
 public class Dealer implements Serializable {
     @Id
     private UUID id;
-
+    @TenantId
     private String tenantId;
 
     private String name;

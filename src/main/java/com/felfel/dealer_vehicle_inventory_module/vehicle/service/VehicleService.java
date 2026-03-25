@@ -1,33 +1,35 @@
 package com.felfel.dealer_vehicle_inventory_module.vehicle.service;
 
 import com.felfel.dealer_vehicle_inventory_module.system.exception.OpjectNotFoundException;
+import com.felfel.dealer_vehicle_inventory_module.system.jdbc.CustomGlobalQuery;
+import com.felfel.dealer_vehicle_inventory_module.tenant.TenantContext;
 import com.felfel.dealer_vehicle_inventory_module.vehicle.Data.Vehicle;
 import com.felfel.dealer_vehicle_inventory_module.vehicle.dto.VehiclePatchRequestDto;
 import com.felfel.dealer_vehicle_inventory_module.vehicle.dto.VehiclePostRequestDto;
 import com.felfel.dealer_vehicle_inventory_module.vehicle.repository.VehicleRepo;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 
 @Service
 public class VehicleService {
-    VehicleRepo vehicleRepo;
+
+    private final VehicleRepo vehicleRepo;
+    private final CustomGlobalQuery customGlobalQuery;
     private final String OBJECT_TYPE="vehicle";
 
-    public VehicleService(VehicleRepo vehicleRepo) {
+    public VehicleService(VehicleRepo vehicleRepo, CustomGlobalQuery customGlobalQuery) {
         this.vehicleRepo = vehicleRepo;
+        this.customGlobalQuery = customGlobalQuery;
     }
 
     public List<Vehicle> findAll() {
-        List<Vehicle> vehicles = this.vehicleRepo.findAll();
-        if(vehicles.isEmpty())
-        {
-            throw new OpjectNotFoundException(OBJECT_TYPE);
-        }
-        return vehicles;
+        return this.vehicleRepo.findAll();
     }
 
     public Vehicle findById(UUID id) {
+        checkVehicleBelongToCurrentTent(id,TenantContext.getCurrentTenant());
         return this.vehicleRepo.findById(id)
                 .orElseThrow(() -> new OpjectNotFoundException(OBJECT_TYPE,id.toString()));
     }
@@ -35,7 +37,7 @@ public class VehicleService {
     public Vehicle add( VehiclePostRequestDto newVehicle) {
         Vehicle addedVehicle = new Vehicle(
                 UUID.randomUUID(),
-                null,
+                TenantContext.getCurrentTenant(),
                 newVehicle.dealerId(),
                 newVehicle.model(),
                 newVehicle.price(),
@@ -45,6 +47,7 @@ public class VehicleService {
     }
 
     public Vehicle update(UUID id, VehiclePatchRequestDto updatedVehicle) {
+        checkVehicleBelongToCurrentTent(id,TenantContext.getCurrentTenant());
         return this.vehicleRepo.findById(id)
                 .map(oldVehicle->
                 {
@@ -62,8 +65,19 @@ public class VehicleService {
     }
 
     public void delete(UUID id) {
+        checkVehicleBelongToCurrentTent(id,TenantContext.getCurrentTenant());
         this.vehicleRepo.findById(id)
                 .orElseThrow(()->new OpjectNotFoundException(OBJECT_TYPE,id.toString()));
         this.vehicleRepo.deleteById(id);
+    }
+
+    public void checkVehicleBelongToCurrentTent(UUID id,String currentTent)
+    {
+         if(this.customGlobalQuery.isVehicleExistsInOtherTenant(id,currentTent))
+             throw new AccessDeniedException("Cross-tenant access blocked");
+    }
+    public boolean isReferencedDealerBelongToCurrentTent(UUID referencedDealerId,String currentTent)
+    {
+        return true;
     }
 }

@@ -1,0 +1,20 @@
+spring:
+  # Database configuration
+  datasource:
+    url: jdbc:postgresql://localhost:5432/dealer_vehicle_inventory
+    username: postgres
+    password: 052577
+    driver-class-name: org.postgresql.Driver
+
+  # JPA configuration
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: none
+      default_schema: public
+      multi_tenancy: DISCRIMINATOR
+      tenant_identifier_resolver: com.felfel.dealer_vehicle_inventory_module.tenant.TenantIdentifierResolver
+      tenant_identifier_binding_mode: IMPLICIT
+      discriminator_column_name: tenant_id
+      discriminator_column_type: STRING
+
