@@ -1,12 +1,12 @@
 package com.felfel.dealer_vehicle_inventory_module.system.exception;
 
-import com.felfel.hogwarts_artifacts_online.system.Result;
+import com.felfel.dealer_vehicle_inventory_module.system.Result;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.authentication.AccountStatusException;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
+//import org.springframework.security.authentication.AccountStatusException;
+//import org.springframework.security.authentication.BadCredentialsException;
+//import org.springframework.security.core.userdetails.UsernameNotFoundException;
+//import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -67,12 +67,12 @@ public class ExceptionHandlerAdvise {
      * @param ex the ex
      * @return the result
      */
-    @ExceptionHandler({UsernameNotFoundException.class, BadCredentialsException.class})
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    Result handleAuthorizationException(Exception ex)
-    {
-        return new Result(false, HttpStatus.UNAUTHORIZED.value(),"username or password is incorrect ",ex.getMessage());
-    }
+//    @ExceptionHandler({UsernameNotFoundException.class, BadCredentialsException.class})
+//    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+//    Result handleAuthorizationException(Exception ex)
+//    {
+//        return new Result(false, HttpStatus.UNAUTHORIZED.value(),"username or password is incorrect ",ex.getMessage());
+//    }
 
     /**
      * Handle account status exception result.
@@ -80,12 +80,12 @@ public class ExceptionHandlerAdvise {
      * @param ex the ex
      * @return the result
      */
-    @ExceptionHandler(AccountStatusException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    Result handleAccountStatusException(AccountStatusException ex)
-    {
-        return new Result(false, HttpStatus.UNAUTHORIZED.value(),"user account is abnormal",ex.getMessage());
-    }
+//    @ExceptionHandler(AccountStatusException.class)
+//    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+//    Result handleAccountStatusException(AccountStatusException ex)
+//    {
+//        return new Result(false, HttpStatus.UNAUTHORIZED.value(),"user account is abnormal",ex.getMessage());
+//    }
 
     /**
      * Handle invalid bearer token exception result.
@@ -93,12 +93,12 @@ public class ExceptionHandlerAdvise {
      * @param ex the ex
      * @return the result
      */
-    @ExceptionHandler(InvalidBearerTokenException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    Result handleInvalidBearerTokenException(InvalidBearerTokenException ex)
-    {
-        return new Result(false, HttpStatus.UNAUTHORIZED.value(),"access token provided is expired, revoked, malformed, or invalid",ex.getMessage());
-    }
+//    @ExceptionHandler(InvalidBearerTokenException.class)
+//    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+//    Result handleInvalidBearerTokenException(InvalidBearerTokenException ex)
+//    {
+//        return new Result(false, HttpStatus.UNAUTHORIZED.value(),"access token provided is expired, revoked, malformed, or invalid",ex.getMessage());
+//    }
 
     /**
      * Handle access denied exception result.
