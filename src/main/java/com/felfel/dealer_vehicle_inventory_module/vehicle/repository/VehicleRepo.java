@@ -7,6 +7,5 @@ import java.util.UUID;
 
 @Repository
 public interface VehicleRepo extends JpaRepository<Vehicle, UUID> {
-    boolean existsById(UUID id);
 }
 
