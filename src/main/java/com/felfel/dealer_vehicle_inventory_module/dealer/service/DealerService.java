@@ -8,6 +8,8 @@ import com.felfel.dealer_vehicle_inventory_module.dealer.repository.DealerRepo;
 import com.felfel.dealer_vehicle_inventory_module.system.exception.OpjectNotFoundException;
 import com.felfel.dealer_vehicle_inventory_module.system.jdbc.CustomGlobalQuery;
 import com.felfel.dealer_vehicle_inventory_module.tenant.TenantContext;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -79,5 +81,9 @@ public class DealerService {
                 .stream()
                 .map(Dealer::getId)
                 .toList();
+    }
+
+    public Page<Dealer> findAll(Pageable pageable) {
+        return this.dealerRepo.findAll(pageable);
     }
 }
