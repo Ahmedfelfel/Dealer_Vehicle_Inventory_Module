@@ -1,5 +1,6 @@
 package com.felfel.dealer_vehicle_inventory_module.vehicle.controller;
 
+import com.felfel.dealer_vehicle_inventory_module.dealer.Data.SubscriptionType;
 import com.felfel.dealer_vehicle_inventory_module.system.Result;
 import com.felfel.dealer_vehicle_inventory_module.vehicle.Data.Vehicle;
 import com.felfel.dealer_vehicle_inventory_module.vehicle.converter.VehicleToVehicleResponseDtoConverter;
@@ -7,6 +8,7 @@ import com.felfel.dealer_vehicle_inventory_module.vehicle.dto.VehiclePatchReques
 import com.felfel.dealer_vehicle_inventory_module.vehicle.dto.VehiclePostRequestDto;
 import com.felfel.dealer_vehicle_inventory_module.vehicle.dto.VehicleResponseDto;
 import com.felfel.dealer_vehicle_inventory_module.vehicle.service.VehicleService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,14 +27,19 @@ public class VehicleController {
         this.vehicleToVehicleResponseDtoConverter = vehicleToVehicleResponseDtoConverter;
     }
 
-    @GetMapping()
-    public Result findAllVehicles() {
-        List<Vehicle> vehicles = vehicleService.findAll();
-        List<VehicleResponseDto> foundVehicleDtos = vehicles
-                .stream()
+    @GetMapping
+    public Result findAllVehicles(
+            @RequestParam(required = false) SubscriptionType subscription) {
+
+        List<Vehicle> vehicles = (subscription != null)
+                ? vehicleService.findAll(subscription)
+                : vehicleService.findAll();
+
+        List<VehicleResponseDto> dtos = vehicles.stream()
                 .map(vehicleToVehicleResponseDtoConverter::convert)
                 .toList();
-        return new Result(true, HttpStatus.OK.value(), "find all success", foundVehicleDtos);
+
+        return new Result(true, HttpStatus.OK.value(), "find all success", dtos);
     }
 
     @GetMapping("/{id}")
@@ -44,7 +51,7 @@ public class VehicleController {
     }
 
     @PostMapping("")
-    public Result addVehicle(@RequestBody VehiclePostRequestDto newVehicle)
+    public Result addVehicle(@Valid @RequestBody VehiclePostRequestDto newVehicle)
     {
         Vehicle addedVehicle = vehicleService.add(newVehicle);
         VehicleResponseDto addedVehicleDto = vehicleToVehicleResponseDtoConverter.convert(addedVehicle);
