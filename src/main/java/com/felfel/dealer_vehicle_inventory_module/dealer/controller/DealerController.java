@@ -8,6 +8,8 @@ import com.felfel.dealer_vehicle_inventory_module.dealer.dto.DealerResponseDto;
 import com.felfel.dealer_vehicle_inventory_module.dealer.service.DealerService;
 import com.felfel.dealer_vehicle_inventory_module.system.Result;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,12 +27,10 @@ public class DealerController {
         this.dealerToDealerResponseDtoConverter = dealerToDealerResponseDtoConverter;
     }
     @GetMapping()
-    public Result findAllDealers() {
-        List<Dealer> dealers = dealerService.findAll();
-        List<DealerResponseDto> foundDealerDtos = dealers
-                .stream()
-                .map(dealerToDealerResponseDtoConverter::convert)
-                .toList();
+    public Result findAllDealers(Pageable pageable) {
+        Page<Dealer> dealers = dealerService.findAll(pageable);
+        Page<DealerResponseDto> foundDealerDtos = dealers
+                .map(dealerToDealerResponseDtoConverter::convert);
         return new Result(true, HttpStatus.OK.value(), "find all success", foundDealerDtos);
     }
 
