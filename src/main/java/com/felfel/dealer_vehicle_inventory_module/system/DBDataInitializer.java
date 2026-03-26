@@ -14,7 +14,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -89,6 +88,30 @@ public class DBDataInitializer implements CommandLineRunner {
                 BigDecimal.valueOf(2499.99),
                 VehicleStatus.AVAILABLE
         );
+        Vehicle v4 = new Vehicle(
+                UUID.randomUUID(),
+                "ABC",
+                d1.getId(),
+                "model4",
+                BigDecimal.valueOf(2699.99),
+                VehicleStatus.AVAILABLE
+        );
+        Vehicle v5 = new Vehicle(
+                UUID.randomUUID(),
+                "XYZ",
+                d3.getId(),
+                "model5",
+                BigDecimal.valueOf(1899.99),
+                VehicleStatus.AVAILABLE
+        );
+        Vehicle v6 = new Vehicle(
+                UUID.randomUUID(),
+                "ABC",
+                d2.getId(),
+                "model6",
+                BigDecimal.valueOf(2799.99),
+                VehicleStatus.AVAILABLE
+        );
 //        vehicleRepo.saveAll(List.of(v1, v2, v3));
 //        dealerRepo.saveAll(List.of(d1,d2,d3));
 
@@ -99,10 +122,13 @@ public class DBDataInitializer implements CommandLineRunner {
             dealerRepo.save(d2);
             vehicleRepo.save(v1);
             vehicleRepo.save(v3);
+            vehicleRepo.save(v4);
+            vehicleRepo.save(v6);
 
             TenantContext.setCurrentTenant("XYZ");
             dealerRepo.save(d3);
             vehicleRepo.save(v2);
+            vehicleRepo.save(v5);
         } finally {
             TenantContext.clear();
         }

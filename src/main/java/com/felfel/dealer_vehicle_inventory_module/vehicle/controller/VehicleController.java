@@ -3,16 +3,19 @@ package com.felfel.dealer_vehicle_inventory_module.vehicle.controller;
 import com.felfel.dealer_vehicle_inventory_module.dealer.Data.SubscriptionType;
 import com.felfel.dealer_vehicle_inventory_module.system.Result;
 import com.felfel.dealer_vehicle_inventory_module.vehicle.Data.Vehicle;
+import com.felfel.dealer_vehicle_inventory_module.vehicle.Data.VehicleStatus;
 import com.felfel.dealer_vehicle_inventory_module.vehicle.converter.VehicleToVehicleResponseDtoConverter;
 import com.felfel.dealer_vehicle_inventory_module.vehicle.dto.VehiclePatchRequestDto;
 import com.felfel.dealer_vehicle_inventory_module.vehicle.dto.VehiclePostRequestDto;
 import com.felfel.dealer_vehicle_inventory_module.vehicle.dto.VehicleResponseDto;
 import com.felfel.dealer_vehicle_inventory_module.vehicle.service.VehicleService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @RestController
@@ -29,18 +32,33 @@ public class VehicleController {
 
     @GetMapping
     public Result findAllVehicles(
-            @RequestParam(required = false) SubscriptionType subscription) {
+            Pageable pageable,
+            @RequestParam(required = false) SubscriptionType subscription,
+            @RequestParam(required = false) String model,
+            @RequestParam(required = false) VehicleStatus status,
+            @RequestParam(required = false) BigDecimal priceMin,
+            @RequestParam(required = false) BigDecimal priceMax
+    ) {
+        Page<Vehicle> vehicles = vehicleService.findAll(
+                pageable,
+                subscription,
+                model,
+                status,
+                priceMin,
+                priceMax
+        );
 
-        List<Vehicle> vehicles = (subscription != null)
-                ? vehicleService.findAll(subscription)
-                : vehicleService.findAll();
+        Page<VehicleResponseDto> dtos = vehicles
+                .map(vehicleToVehicleResponseDtoConverter::convert);
 
-        List<VehicleResponseDto> dtos = vehicles.stream()
-                .map(vehicleToVehicleResponseDtoConverter::convert)
-                .toList();
-
-        return new Result(true, HttpStatus.OK.value(), "find all success", dtos);
+        return new Result(
+                true,
+                HttpStatus.OK.value(),
+                "find all success",
+                dtos
+        );
     }
+
 
     @GetMapping("/{id}")
     public Result findVehicleById(@PathVariable UUID id)
