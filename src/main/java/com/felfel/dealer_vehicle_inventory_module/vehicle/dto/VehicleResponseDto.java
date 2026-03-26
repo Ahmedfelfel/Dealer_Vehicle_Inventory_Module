@@ -4,6 +4,9 @@ import com.felfel.dealer_vehicle_inventory_module.vehicle.Data.VehicleStatus;
 import java.math.BigDecimal;
 import java.util.UUID;
 
+/**
+ * The type Vehicle response dto.
+ */
 public record VehicleResponseDto(
                          UUID id,
                                   UUID dealerId,

@@ -8,6 +8,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
+/**
+ * The type Tenant context filter.
+ */
 @Component
 public class TenantContextFilter extends OncePerRequestFilter {
 
@@ -29,7 +32,7 @@ public class TenantContextFilter extends OncePerRequestFilter {
     }
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        return request.getRequestURI()
-                .startsWith("/h2-console");
+        String path = request.getRequestURI();
+        return  path.startsWith("/h2-console")||path.startsWith("/admin/dealers/countBySubscription");
     }
 }
