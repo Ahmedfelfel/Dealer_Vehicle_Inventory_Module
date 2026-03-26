@@ -6,11 +6,16 @@ import com.felfel.dealer_vehicle_inventory_module.system.exception.OpjectNotFoun
 import com.felfel.dealer_vehicle_inventory_module.system.jdbc.CustomGlobalQuery;
 import com.felfel.dealer_vehicle_inventory_module.tenant.TenantContext;
 import com.felfel.dealer_vehicle_inventory_module.vehicle.Data.Vehicle;
+import com.felfel.dealer_vehicle_inventory_module.vehicle.Data.VehicleStatus;
 import com.felfel.dealer_vehicle_inventory_module.vehicle.dto.VehiclePatchRequestDto;
 import com.felfel.dealer_vehicle_inventory_module.vehicle.dto.VehiclePostRequestDto;
 import com.felfel.dealer_vehicle_inventory_module.vehicle.repository.VehicleRepo;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,14 +33,82 @@ public class VehicleService {
         this.dealerService = dealerService;
     }
 
-    public List<Vehicle> findAll() {
-        return this.vehicleRepo.findAll();
+
+    public Page<Vehicle> findAll(
+            Pageable pageable,
+            SubscriptionType subscription,
+            String model,
+            VehicleStatus status,
+            BigDecimal priceMin,
+            BigDecimal priceMax
+    ) {
+
+        if (subscription != null) {
+            return findAllWithSubscription(pageable, subscription, model, status, priceMin, priceMax);
+        }
+
+        return findAllWithoutSubscription(pageable, model, status, priceMin, priceMax);
     }
-    public List<Vehicle> findAll(SubscriptionType subscription) {
+
+    private Page<Vehicle> findAllWithSubscription(
+            Pageable pageable,
+            SubscriptionType subscription,
+            String model,
+            VehicleStatus status,
+            BigDecimal priceMin,
+            BigDecimal priceMax
+    ) {
         List<UUID> dealerIds = dealerService.findIdsBySubscription(subscription);
-        if (dealerIds.isEmpty()) return List.of();
-        return vehicleRepo.findByDealerIdIn(dealerIds);
+
+        if (dealerIds.isEmpty()) {
+            return Page.empty(pageable);
+        }
+
+        if (model != null && !model.isBlank()) {
+            return vehicleRepo.findByDealerIdInAndModelContainingIgnoreCase(dealerIds, model, pageable);
+        }
+
+        if (status != null) {
+            return vehicleRepo.findByDealerIdInAndStatus(dealerIds, status, pageable);
+        }
+
+        if (priceMin != null) {
+            return vehicleRepo.findByDealerIdInAndPriceGreaterThanEqual(dealerIds, priceMin, pageable);
+        }
+
+        if (priceMax != null) {
+            return vehicleRepo.findByDealerIdInAndPriceLessThanEqual(dealerIds, priceMax, pageable);
+        }
+
+        return vehicleRepo.findByDealerIdIn(dealerIds, pageable);
     }
+
+    private Page<Vehicle> findAllWithoutSubscription(
+            Pageable pageable,
+            String model,
+            VehicleStatus status,
+            BigDecimal priceMin,
+            BigDecimal priceMax
+    ) {
+        if (model != null && !model.isBlank()) {
+            return vehicleRepo.findByModelContainingIgnoreCase(model, pageable);
+        }
+
+        if (status != null) {
+            return vehicleRepo.findByStatus(status, pageable);
+        }
+
+        if (priceMin != null) {
+            return vehicleRepo.findByPriceGreaterThanEqual(priceMin, pageable);
+        }
+
+        if (priceMax != null) {
+            return vehicleRepo.findByPriceLessThanEqual(priceMax, pageable);
+        }
+
+        return vehicleRepo.findAll(pageable);
+    }
+
 
     public Vehicle findById(UUID id) {
         checkVehicleNotBelongToOtherTenant(id,TenantContext.getCurrentTenant());
@@ -87,6 +160,5 @@ public class VehicleService {
          if(this.customGlobalQuery.isVehicleExistsInOtherTenant(id,currentTent))
              throw new AccessDeniedException("Cross-tenant access blocked");
     }
-
 
 }
