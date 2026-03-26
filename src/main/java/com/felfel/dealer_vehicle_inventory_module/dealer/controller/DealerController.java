@@ -7,6 +7,7 @@ import com.felfel.dealer_vehicle_inventory_module.dealer.dto.DealerPostRequestDt
 import com.felfel.dealer_vehicle_inventory_module.dealer.dto.DealerResponseDto;
 import com.felfel.dealer_vehicle_inventory_module.dealer.service.DealerService;
 import com.felfel.dealer_vehicle_inventory_module.system.Result;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,7 +43,7 @@ public class DealerController {
     }
 
     @PostMapping("")
-    public Result addDealer(@RequestBody DealerPostRequestDto newDealer)
+    public Result addDealer(@Valid @RequestBody DealerPostRequestDto newDealer)
     {
         Dealer addedDealer = dealerService.add(newDealer);
         DealerResponseDto addedDealerDto = dealerToDealerResponseDtoConverter.convert(addedDealer);

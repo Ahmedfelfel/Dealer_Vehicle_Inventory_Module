@@ -7,11 +7,13 @@ import org.springframework.stereotype.Component;
 public class TenantIdentifierResolver implements CurrentTenantIdentifierResolver {
     @Override
     public Object resolveCurrentTenantIdentifier() {
-        return TenantContext.getCurrentTenant();
+       // return TenantContext.getCurrentTenant();
+        String tenant = TenantContext.getCurrentTenant();
+        return (tenant != null) ? tenant : "__BOOTSTRAP__";
     }
 
     @Override
     public boolean validateExistingCurrentSessions() {
-        return true;
+        return false;
     }
 }

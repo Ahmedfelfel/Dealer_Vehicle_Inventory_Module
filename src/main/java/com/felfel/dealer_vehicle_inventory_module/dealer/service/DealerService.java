@@ -1,6 +1,7 @@
 package com.felfel.dealer_vehicle_inventory_module.dealer.service;
 
 import com.felfel.dealer_vehicle_inventory_module.dealer.Data.Dealer;
+import com.felfel.dealer_vehicle_inventory_module.dealer.Data.SubscriptionType;
 import com.felfel.dealer_vehicle_inventory_module.dealer.dto.DealerPatchRequestDto;
 import com.felfel.dealer_vehicle_inventory_module.dealer.dto.DealerPostRequestDto;
 import com.felfel.dealer_vehicle_inventory_module.dealer.repository.DealerRepo;
@@ -29,7 +30,7 @@ public class DealerService {
     }
 
     public Dealer findById(UUID id) {
-        checkDealerNotBelongToCurrentTent(id, TenantContext.getCurrentTenant());
+        checkDealerNotBelongToOtherTenant(id, TenantContext.getCurrentTenant());
         return this.dealerRepo.findById(id)
                 .orElseThrow(() -> new OpjectNotFoundException(OBJECT_TYPE, id.toString()));
     }
@@ -46,7 +47,7 @@ public class DealerService {
     }
 
     public Dealer update(UUID id, DealerPatchRequestDto updatedDealer) {
-        checkDealerNotBelongToCurrentTent(id,TenantContext.getCurrentTenant());
+        checkDealerNotBelongToOtherTenant(id,TenantContext.getCurrentTenant());
         return this.dealerRepo.findById(id)
                 .map(oldDealer->
                 {
@@ -62,14 +63,21 @@ public class DealerService {
     }
 
     public void delete(UUID id) {
-        checkDealerNotBelongToCurrentTent(id,TenantContext.getCurrentTenant());
+        checkDealerNotBelongToOtherTenant(id,TenantContext.getCurrentTenant());
         this.dealerRepo.findById(id)
                 .orElseThrow(()->new OpjectNotFoundException(OBJECT_TYPE,id.toString()));
         this.dealerRepo.deleteById(id);
     }
-    public void checkDealerNotBelongToCurrentTent(UUID id, String currentTent)
+    public void checkDealerNotBelongToOtherTenant(UUID id, String currentTent)
     {
         if(this.customGlobalQuery.isDealerExistsInOtherTenant(id,currentTent))
             throw new AccessDeniedException("Cross-tenant access blocked");
+    }
+
+    public List<UUID> findIdsBySubscription(SubscriptionType subscription) {
+        return dealerRepo.findBySubscriptionType(subscription)
+                .stream()
+                .map(Dealer::getId)
+                .toList();
     }
 }
