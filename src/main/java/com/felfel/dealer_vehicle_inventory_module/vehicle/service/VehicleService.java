@@ -2,7 +2,7 @@ package com.felfel.dealer_vehicle_inventory_module.vehicle.service;
 
 import com.felfel.dealer_vehicle_inventory_module.dealer.Data.SubscriptionType;
 import com.felfel.dealer_vehicle_inventory_module.dealer.service.DealerService;
-import com.felfel.dealer_vehicle_inventory_module.system.exception.OpjectNotFoundException;
+import com.felfel.dealer_vehicle_inventory_module.system.exception.ObjectNotFoundException;
 import com.felfel.dealer_vehicle_inventory_module.system.jdbc.CustomGlobalQuery;
 import com.felfel.dealer_vehicle_inventory_module.tenant.TenantContext;
 import com.felfel.dealer_vehicle_inventory_module.vehicle.Data.Vehicle;
@@ -19,6 +19,9 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * The type Vehicle service.
+ */
 @Service
 public class VehicleService {
 
@@ -27,6 +30,13 @@ public class VehicleService {
     private final String OBJECT_TYPE="vehicle";
     private final DealerService dealerService;
 
+    /**
+     * Instantiates a new Vehicle service.
+     *
+     * @param vehicleRepo       the vehicle repo
+     * @param customGlobalQuery the custom global query
+     * @param dealerService     the dealer service
+     */
     public VehicleService(VehicleRepo vehicleRepo, CustomGlobalQuery customGlobalQuery, DealerService dealerService) {
         this.vehicleRepo = vehicleRepo;
         this.customGlobalQuery = customGlobalQuery;
@@ -34,6 +44,17 @@ public class VehicleService {
     }
 
 
+    /**
+     * Find all page.
+     *
+     * @param pageable     the pageable
+     * @param subscription the subscription
+     * @param model        the model
+     * @param status       the status
+     * @param priceMin     the price min
+     * @param priceMax     the price max
+     * @return the page
+     */
     public Page<Vehicle> findAll(
             Pageable pageable,
             SubscriptionType subscription,
@@ -110,12 +131,24 @@ public class VehicleService {
     }
 
 
+    /**
+     * Find by id vehicle.
+     *
+     * @param id the id
+     * @return the vehicle
+     */
     public Vehicle findById(UUID id) {
         checkVehicleNotBelongToOtherTenant(id,TenantContext.getCurrentTenant());
         return this.vehicleRepo.findById(id)
-                .orElseThrow(() -> new OpjectNotFoundException(OBJECT_TYPE,id.toString()));
+                .orElseThrow(() -> new ObjectNotFoundException(OBJECT_TYPE,id.toString()));
     }
 
+    /**
+     * Add vehicle.
+     *
+     * @param newVehicle the new vehicle
+     * @return the vehicle
+     */
     public Vehicle add( VehiclePostRequestDto newVehicle) {
         this.dealerService.checkDealerNotBelongToOtherTenant(newVehicle.dealerId(),TenantContext.getCurrentTenant());
         Vehicle addedVehicle = new Vehicle(
@@ -129,6 +162,13 @@ public class VehicleService {
         return vehicleRepo.save(addedVehicle);
     }
 
+    /**
+     * Update vehicle.
+     *
+     * @param id             the id
+     * @param updatedVehicle the updated vehicle
+     * @return the vehicle
+     */
     public Vehicle update(UUID id, VehiclePatchRequestDto updatedVehicle) {
         this.checkVehicleNotBelongToOtherTenant(id,TenantContext.getCurrentTenant());
         return this.vehicleRepo.findById(id)
@@ -145,16 +185,27 @@ public class VehicleService {
                         oldVehicle.setStatus(updatedVehicle.status());
                     return this.vehicleRepo.save(oldVehicle);
                 })
-                .orElseThrow(() -> new OpjectNotFoundException(OBJECT_TYPE,id.toString()));
+                .orElseThrow(() -> new ObjectNotFoundException(OBJECT_TYPE,id.toString()));
     }
 
+    /**
+     * Delete.
+     *
+     * @param id the id
+     */
     public void delete(UUID id) {
         checkVehicleNotBelongToOtherTenant(id,TenantContext.getCurrentTenant());
         this.vehicleRepo.findById(id)
-                .orElseThrow(()->new OpjectNotFoundException(OBJECT_TYPE,id.toString()));
+                .orElseThrow(()->new ObjectNotFoundException(OBJECT_TYPE,id.toString()));
         this.vehicleRepo.deleteById(id);
     }
 
+    /**
+     * Check vehicle not belong to other tenant.
+     *
+     * @param id          the id
+     * @param currentTent the current tent
+     */
     public void checkVehicleNotBelongToOtherTenant(UUID id, String currentTent)
     {
          if(this.customGlobalQuery.isVehicleExistsInOtherTenant(id,currentTent))

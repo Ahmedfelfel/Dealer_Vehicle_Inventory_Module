@@ -30,9 +30,9 @@ public class ExceptionHandlerAdvise {
      * @param ex the ex
      * @return the result
      */
-    @ExceptionHandler(OpjectNotFoundException.class)
+    @ExceptionHandler(ObjectNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    Result handleObjectNotFoundException(OpjectNotFoundException ex)
+    Result handleObjectNotFoundException(ObjectNotFoundException ex)
     {
         return new Result(false, HttpStatus.NOT_FOUND.value(),ex.getMessage());
     }
@@ -60,45 +60,6 @@ public class ExceptionHandlerAdvise {
                         "Provided arguments are invalid",
                                 map);
     }
-
-    /**
-     * Handle authorization exception result.
-     *
-     * @param ex the ex
-     * @return the result
-     */
-//    @ExceptionHandler({UsernameNotFoundException.class, BadCredentialsException.class})
-//    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-//    Result handleAuthorizationException(Exception ex)
-//    {
-//        return new Result(false, HttpStatus.UNAUTHORIZED.value(),"username or password is incorrect ",ex.getMessage());
-//    }
-
-    /**
-     * Handle account status exception result.
-     *
-     * @param ex the ex
-     * @return the result
-     */
-//    @ExceptionHandler(AccountStatusException.class)
-//    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-//    Result handleAccountStatusException(AccountStatusException ex)
-//    {
-//        return new Result(false, HttpStatus.UNAUTHORIZED.value(),"user account is abnormal",ex.getMessage());
-//    }
-
-    /**
-     * Handle invalid bearer token exception result.
-     *
-     * @param ex the ex
-     * @return the result
-     */
-//    @ExceptionHandler(InvalidBearerTokenException.class)
-//    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-//    Result handleInvalidBearerTokenException(InvalidBearerTokenException ex)
-//    {
-//        return new Result(false, HttpStatus.UNAUTHORIZED.value(),"access token provided is expired, revoked, malformed, or invalid",ex.getMessage());
-//    }
 
     /**
      * Handle access denied exception result.

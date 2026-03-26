@@ -5,6 +5,9 @@ import jakarta.validation.constraints.NotEmpty;
 import java.math.BigDecimal;
 import java.util.UUID;
 
+/**
+ * The type Vehicle patch request dto.
+ */
 public record VehiclePatchRequestDto(
 
                                   UUID dealerId,

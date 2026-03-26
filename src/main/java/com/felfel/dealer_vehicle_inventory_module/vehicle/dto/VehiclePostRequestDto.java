@@ -6,6 +6,9 @@ import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.UUID;
 
+/**
+ * The type Vehicle post request dto.
+ */
 public record VehiclePostRequestDto(
                                   @NotNull(message = "dealerId is required")
                                   UUID dealerId,

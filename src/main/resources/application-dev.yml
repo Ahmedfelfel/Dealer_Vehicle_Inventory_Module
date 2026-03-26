@@ -19,7 +19,7 @@ spring:
         dialect: org.hibernate.dialect.H2Dialect
         format_sql: true
     show-sql: true
-    defer-datasource-initialization: true  # ← هنا
+    defer-datasource-initialization: true
   data:
     jpa:
       repositories:

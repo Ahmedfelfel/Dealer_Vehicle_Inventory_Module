@@ -17,7 +17,8 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 /**
- * The type Db data initializer.
+ * Component to initialize the database with sample data during application startup.
+ * Active only in the 'dev' profile.
  */
 @SuppressWarnings("RedundantThrows")
 @Component
@@ -25,18 +26,24 @@ import java.util.UUID;
 public class DBDataInitializer implements CommandLineRunner {
 
     private final VehicleRepo vehicleRepo;
-
     private final DealerRepo dealerRepo;
 
-
+    /**
+     * Constructs the data initializer.
+     *
+     * @param vehicleRepo The vehicle repository.
+     * @param dealerRepo  The dealer repository.
+     */
     public DBDataInitializer(VehicleRepo vehicleRepo, DealerRepo dealerRepo)
     {
         this.vehicleRepo = vehicleRepo;
-       this.dealerRepo = dealerRepo;
+        this.dealerRepo = dealerRepo;
     }
 
-
-
+    /**
+     * Executes the initialization logic.
+     * Creates sample dealers and vehicles for tenants 'ABC' and 'XYZ'.
+     */
     @Override
     public void run(String... args) throws Exception {
         // Initialize your database with sample data here
@@ -112,8 +119,6 @@ public class DBDataInitializer implements CommandLineRunner {
                 BigDecimal.valueOf(2799.99),
                 VehicleStatus.AVAILABLE
         );
-//        vehicleRepo.saveAll(List.of(v1, v2, v3));
-//        dealerRepo.saveAll(List.of(d1,d2,d3));
 
         // Group by tenant to save safely
         try {

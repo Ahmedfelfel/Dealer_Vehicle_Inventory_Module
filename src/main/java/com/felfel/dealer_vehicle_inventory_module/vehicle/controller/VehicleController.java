@@ -18,6 +18,9 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.util.UUID;
 
+/**
+ * The type Vehicle controller.
+ */
 @RestController
 @RequestMapping("vehicles")
 public class VehicleController {
@@ -25,11 +28,28 @@ public class VehicleController {
     private final VehicleService vehicleService;
     private final VehicleToVehicleResponseDtoConverter vehicleToVehicleResponseDtoConverter;
 
+    /**
+     * Instantiates a new Vehicle controller.
+     *
+     * @param vehicleService                       the vehicle service
+     * @param vehicleToVehicleResponseDtoConverter the vehicle to vehicle response dto converter
+     */
     public VehicleController(VehicleService vehicleService, VehicleToVehicleResponseDtoConverter vehicleToVehicleResponseDtoConverter) {
         this.vehicleService = vehicleService;
         this.vehicleToVehicleResponseDtoConverter = vehicleToVehicleResponseDtoConverter;
     }
 
+    /**
+     * Find all vehicles result.
+     *
+     * @param pageable     the pageable
+     * @param subscription the subscription
+     * @param model        the model
+     * @param status       the status
+     * @param priceMin     the price min
+     * @param priceMax     the price max
+     * @return the result
+     */
     @GetMapping
     public Result findAllVehicles(
             Pageable pageable,
@@ -60,6 +80,12 @@ public class VehicleController {
     }
 
 
+    /**
+     * Find vehicle by id result.
+     *
+     * @param id the id
+     * @return the result
+     */
     @GetMapping("/{id}")
     public Result findVehicleById(@PathVariable UUID id)
     {
@@ -68,6 +94,12 @@ public class VehicleController {
         return new Result(true,HttpStatus.OK.value(), "find one success",foundVehicleDto);
     }
 
+    /**
+     * Add vehicle result.
+     *
+     * @param newVehicle the new vehicle
+     * @return the result
+     */
     @PostMapping("")
     public Result addVehicle(@Valid @RequestBody VehiclePostRequestDto newVehicle)
     {
@@ -76,6 +108,14 @@ public class VehicleController {
         return new Result(true,HttpStatus.CREATED.value(), "add success",addedVehicleDto);
 
     }
+
+    /**
+     * Update vehicle result.
+     *
+     * @param id             the id
+     * @param updatedVehicle the updated vehicle
+     * @return the result
+     */
     @PatchMapping("/{id}")
     public Result updateVehicle(@PathVariable UUID id, @RequestBody VehiclePatchRequestDto updatedVehicle)
     {
@@ -83,6 +123,13 @@ public class VehicleController {
         VehicleResponseDto updatedVehicleDto = vehicleToVehicleResponseDtoConverter.convert(updatedVehicleData);
         return new Result(true,HttpStatus.OK.value(), "update success",updatedVehicleDto);
     }
+
+    /**
+     * Delete vehicle result.
+     *
+     * @param id the id
+     * @return the result
+     */
     @DeleteMapping("/{id}")
     public Result deleteVehicle(@PathVariable UUID id)
     {
